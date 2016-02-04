@@ -1,0 +1,63 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script>
+    function stopSession(ipaddr)
+    {
+        params = {
+            ipaddr: ipaddr,
+            _xsrf: '${handler.xsrf_token}'
+        }
+        $.post("/account/session/stop", params, function (data) {
+            window.location.reload();
+            alert(data.msg)
+        },"json");
+    }
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-user"></i>
+            <h3 class="box-title">在线会话管理(会话总数:${len(session_list)} 最多显示100)</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>账号</th>
+                            <th>会话ID</th>
+                            <th>IP地址</th>
+                            <th>MAC地址</th>
+                            <th>在线时长</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for _,item in session_list.iteritems():
+                        <% 
+                        if loop.index >= 100:
+                            break
+                        %>
+                            <tr>
+                                <td>${item.session_data['User-Name']}</td>
+                                <td>${item.session_data['Acct-Session-Id']}</td>
+                                <td>${item.session_data['Framed-IP-Address']}</td>
+                                <td>${item.session_data['Called-Station-Id']}</td>
+                                <td>${fmt_time(item.session_data['Acct-Session-Time'])}</td>
+                                <td>
+                                    % if permit.match(current_user.username,'/account/session/stop'):
+                                    <a class="opt-btn btn-default" href="javascript:stopSession('${item.session_data["Framed-IP-Address"]}');">下线</a>
+                                    % endif
+                                </td>
+                            </tr>
+                        % endfor
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

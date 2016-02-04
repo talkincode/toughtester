@@ -1,0 +1,134 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script>
+function busy(flag) {
+    if (flag) {
+        $("#loading").show();
+        $("#inbox").html("")
+        $("#do_start").attr("disabled", "disabled");    
+        $("#do_press").attr("disabled", "disabled");    
+    } else {
+        $("#loading").hide();
+        $("#do_start").removeAttr("disabled");
+        $("#do_press").removeAttr("disabled");
+    }
+}
+
+
+function doStart()
+{
+    busy(true);
+    params = {
+        account_number:$("#account_number").val(),
+        vendor_id:$("#vendor_id").val(),
+        _xsrf: '${handler.xsrf_token}'
+    }
+    $.post("/account/tester/auth", params, function (data) {
+        $("#inbox").html(data.msg + '<br><br>' + data.loginfo);
+        busy(false);
+    },"json");
+
+}
+
+
+function doPress()
+{
+    busy(true);
+    params = {
+        account_number:$("#account_number").val(),
+        test_times:$("#test_times").val(),
+        vendor_id:$("#vendor_id").val(),
+        _xsrf: '${handler.xsrf_token}'
+    }
+    $.post("/account/tester/press", params, function (data) {
+        $("#inbox").prepend('<div class="well well-sm">'+ data.msg + '</div>');
+        busy(false);
+    },"json");
+
+}
+
+function doReset(){
+    $("#inbox").html("");
+    busy(False);
+}
+
+$(function () {
+    var source = new EventSource('/account/tester/sse');
+    source.onmessage = function(e) {
+       $("#inbox").prepend('<div class="well well-sm">'+ e.data + '</div>');
+      console.log(e.data);
+    };
+});
+
+
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-user"></i>
+            <h3 class="box-title">账号测试</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+
+
+        <form id="tester_form" class="form-horizontal form-well" role="form" >
+            ${xsrf_form_html()}
+            <div class="form-group">    
+                <label for="radius_ipaddr" class="col-md-1 control-label">Radius</label>
+                <div class="col-md-3">
+                    <select id="radius_ipaddr" name="radius_ipaddr" class="form-control">
+                        % for radius in radius_list:
+                          <option value="${radius.ip_addr}" ${str(radius.ip_addr)==radius_ipaddr and "selected" or ""}>${radius.ip_addr}</option>
+                        % endfor
+                    </select>
+                </div>       
+                <label for="account_number" class="col-md-1 control-label">测试账号</label>
+                <div class="col-md-3">
+                    <select id="account_number" name="account_number" class="form-control">
+                        % for user in user_list:
+                          <option value="${user.account_number}" ${str(user.account_number)==account_number and "selected" or ""}>${user.account_number}</option>
+                        % endfor
+                    </select>
+                </div>
+                <label for="vendor_id" class="col-md-2 control-label">Radius模板</label>
+                <div class="col-md-2">
+                    <select id="vendor_id" name="vendor_id" class="form-control">
+                        <option value=""></option>
+                        % for vendor in vendor_list:
+                          <option value="${vendor.vendor_id}" ${str(vendor.vendor_id)==vendor_id and "selected" or ""}>${vendor.vendor_id}-${vendor.vendor_desc}</option>
+                        % endfor
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label for="test_times" class="col-md-1 control-label">测试次数</label>
+                <div class="col-md-3">
+                     <input type="test_times" class="form-control" id="test_times" placeholder="测试次数">
+                </div>       
+                
+            </div>
+            <hr>
+            <div class="form-group center">
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" id="do_start" onclick="doStart();" class="btn btn-sm btn-default">账号上线</button>
+                    <button type="button" id="do_press" onclick="doPress();" class="btn btn-sm btn-default">压力测试</button>
+                    <button type="button" id="do_press" onclick="doReset();" class="btn btn-sm btn-default">重置</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div id="loading" style="display: none;"><img style="max-height: 90px;width: auto;" src="/static/img/loading.gif"></div>
+        <div id="inbox" class="text-info" style="height:270px;overflow:auto">
+        </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

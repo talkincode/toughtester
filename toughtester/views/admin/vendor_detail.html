@@ -1,0 +1,80 @@
+<%inherit file="base.html"/>
+<%def name="head()">
+<script>
+    function deleteAttr(attr_id) {
+        if (confirm("确认删除吗？")) {
+            window.location.href = "/vendor/attr/delete?attr_id=" +attr_id;
+        }
+    }
+
+</script>
+</%def>
+<%def name="body()">
+<section class="content">
+    <div class="box">
+    <div class="panel-heading"><i class="fa fa-archive"></i> 模板信息
+    <div class="bar pull-right"><a href="javascript:history.go(-1);">返回</a></div>
+    </div>
+        <div class="panel-body">
+            <div class="container">
+            <div class="pull-right">
+           <div class="btn-group" role="group" aria-label="...">
+            % if permit.match(current_user.username,'/vendor/attr/add'):
+            <a href="/vendor/attr/add?vendor_id=${vendor.vendor_id}" 
+            class="btn btn-sm btn-info">增加模板属性</a>
+            % endif
+            </div>
+        </div>
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="4">基本信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>模板ID</td>
+                        <td>${vendor.vendor_id}</td>
+                        <td>模板描述</td>
+                        <td colspan="5">${vendor.vendor_desc}</td>
+                    </tr>
+            </tbody>
+        </table>
+        <hr>
+        <table class="table">
+            <thead>
+            <tr class="active">
+                <th>模板属性名称</th>
+                <th>模板属性值</th>
+                <th>模板属性描述</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            % for attr in attrs:
+            <tr>
+                <td>${attr.attr_name}</td>
+                <td>${attr.attr_value}</td>
+                <td>${attr.attr_desc}</td>
+                <td>
+                    % if permit.match(current_user.username,'/vendor/attr/update'):
+                <a class="opt-btn btn-default" href="/vendor/attr/update?attr_id=${attr.id}">修改</a>
+                    % endif
+                    % if permit.match(current_user.username,'/vendor/attr/delete'):
+                <a class="opt-btn btn-default" href="javascript:deleteAttr('${attr.id}');">删除</a>
+                    % endif
+                </td>
+            </tr>
+            % endfor
+            </tbody>
+        </table>   
+
+  
+
+     
+    </div>
+            </div>
+</div>
+</div>
+    </section>
+</%def>

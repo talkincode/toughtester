@@ -1,0 +1,228 @@
+#!/bin/sh
+# toughtester v2.0 install script
+# author: jamiesun.net@gmail.com
+
+rundir=/home/toughrun
+
+usage ()
+{
+    cat <<EOF
+    Usage: $0 [OPTIONS] instance
+
+    docker_setup                install docker, docker-compose
+    pull                        toughtester docker images pull
+    install                     install toughtester with already exists mysql
+    remove                      uninstall toughtester and database
+    config                      toughtester instance config edit
+    status                      toughtester instance status
+    restart                     toughtester instance restart
+    stop                        toughtester instance stop
+    upgrade                     toughtester instance upgrade
+    logs                        toughtester instance logs
+    dsh                         toughtester instance bash term
+
+    All other options are passed to the ttshell program.
+EOF
+        exit 1
+}
+
+install()
+{
+    instance=${1:-toughtester}
+
+    mkdir -p ${rundir}/$instance
+
+    read -p "toughtester web port [8089]: " web_port
+    web_port=${web_port:-8089}
+
+    cat <<EOF
+
+    toughtester instance config (with sqlite):
+
+    instance name: $instance
+    web_port: ${web_port}
+
+EOF
+
+    rm -f ${rundir}/$instance/docker-compose.yml
+    cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+radius:
+    container_name: tt_${instance}
+    image: "index.alauda.cn/toughstruct/toughtester"
+    ports:
+        - "${web_port}:8089"
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
+    volumes:
+        - ${rundir}/$instance:/var/toughtester
+EOF
+
+    cd ${rundir}/$instance
+
+    cat ${rundir}/$instance/docker-compose.yml
+
+    docker-compose up -d
+
+    docker-compose ps
+
+    exit 0
+}
+
+
+
+docker_setup()
+{
+    curl -sSL https://get.daocloud.io/docker | sh
+
+    curl -L https://get.daocloud.io/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+
+    ln -s /usr/local/bin/docker-compose /usr/local/bin/docp
+
+    service docker start
+}
+
+
+remove()
+{
+    instance=${1:-toughtester}
+
+    cd ${rundir}/$instance
+    read -p "Will delete all, do you confirm? [y/n](n): " is_rm
+    is_rm=${is_rm:-n}
+    if [ $is_rm == "y" ]; then
+        docker-compose kill
+        docker-compose rm
+        rm -f ${rundir}/$instance/.install
+    fi 
+}
+
+
+config()
+{
+    instance=${1:-toughtester}    
+    vi ${rundir}/$instance/docker-compose.yml
+}
+
+status()
+{
+    instance=${1:-toughtester}    
+    cd ${rundir}/$instance
+    docker-compose ps
+}
+
+restart()
+{
+    instance=${1:-toughtester}      
+    cd ${rundir}/$instance
+    docker-compose restart $2
+    docker-compose ps
+}
+
+stop()
+{
+    instance=${1:-toughtester}    
+    cd ${rundir}/$instance
+    docker-compose stop $2
+    docker-compose ps
+}
+
+upgrade()
+{
+    instance=${1:-toughtester}    
+    cd ${rundir}/$instance
+    docker exec -it radius_$instance /usr/local/bin/toughrun upgrade
+    docker-compose restart
+    docker-compose ps
+}
+
+uplib()
+{
+    instance=${1:-toughtester}    
+    cd ${rundir}/$instance
+    docker exec -it radius_$instance /usr/local/bin/toughrun uplib
+    docker-compose restart 
+    docker-compose ps
+}
+
+logs()
+{
+    instance=${1:-toughtester}
+    cd ${rundir}/$instance
+    tail -f ./toughtester.log
+}
+
+dsh()
+{
+    instance=${1:-toughtester}    
+    cd ${rundir}/$instance
+    docker exec -it tt_$instance bash
+}
+
+
+pull()
+{
+    docker pull index.alauda.cn/toughstruct/toughtester
+}
+
+
+case "$1" in
+
+  docker_setup)
+    docker_setup
+  ;;
+
+  install)
+    install $2
+  ;;
+
+  remove)
+    remove $2
+  ;;
+
+  config)
+    config $2
+  ;;
+
+  status)
+    status $2
+  ;;
+
+  restart)
+    restart $2 $3
+  ;;
+
+  stop)
+    stop $2 $3
+  ;;
+
+  logs)
+    logs $2
+  ;;
+
+  dsh)
+    dsh $2
+  ;;
+
+  pull)
+    pull
+  ;;
+
+  upgrade)
+    upgrade $2
+  ;;
+
+  uplib)
+    uplib $2
+  ;;
+
+
+  *)
+   usage
+  ;;
+
+esac

@@ -1,0 +1,110 @@
+#!/bin/sh
+# toughtester docker install script
+# version: 0.0.1
+
+set -e
+
+install()
+{
+    pypy -m pip install https://github.com/talkincode/toughlib/archive/master.zip --upgrade --no-deps
+
+    pypy -m pip install https://github.com/talkincode/txportal/archive/master.zip --upgrade --no-deps
+
+    pypy -m pip install https://github.com/talkincode/txradius/archive/master.zip --upgrade --no-deps
+
+    git clone -b master git@github.com:talkincode/toughtester.git /opt/toughtester
+
+    cp /opt/toughtester/etc/toughtester.json /etc/toughtester.json
+    cp /opt/toughtester/etc/supervisord.conf /etc/supervisord.conf
+
+    chmod +x /opt/toughtester/toughctl
+}
+
+initserv()
+{
+    if [ ! -f "/var/toughtester/data" ];then
+        mkdir -p /var/toughtester/data
+    fi
+
+    if [ ! -f "/var/toughtester/.install" ];then
+        pypy /opt/toughtester/toughctl --initdb
+        echo "ok" > /var/toughtester/.install
+        echo "init database ok!"
+    fi
+
+    echo "init service ok!"
+}
+
+standalone()
+{
+    initserv
+    pypy /opt/toughtester/toughctl --standalone
+}
+
+manage()
+{
+    initserv
+    pypy /opt/toughtester/toughctl --manage
+}
+
+task()
+{
+    pypy /opt/toughtester/toughctl --task
+}
+
+worker()
+{
+    pypy /opt/toughtester/toughctl --worker
+}
+
+upgrade()
+{
+    cd /opt/toughtester
+    git fetch origin master
+    git reset --hard FETCH_HEAD
+    git clean -df
+}
+
+uplib()
+{
+    pypy -m pip install https://github.com/talkincode/toughlib/archive/master.zip --upgrade --no-deps
+    pypy -m pip install https://github.com/talkincode/txportal/archive/master.zip --upgrade --no-deps
+    pypy -m pip install https://github.com/talkincode/txradius/archive/master.zip --upgrade --no-deps    
+}
+
+case "$1" in
+
+  install)
+    install
+  ;;
+
+  initserv)
+    initserv
+  ;;
+
+  standalone)
+    standalone
+  ;;
+
+  manage)
+    manage
+  ;;
+
+  task)
+    task
+  ;;
+
+  worker)
+    worker
+  ;;
+
+  upgrade)
+    upgrade
+  ;;
+
+  uplib)
+    uplib
+  ;;
+
+esac
+

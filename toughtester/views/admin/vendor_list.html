@@ -1,0 +1,68 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script>
+    function deleteVendor(vendor_id) {
+        if (confirm("确认删除吗？")) {
+            var params = {vendor_id: vendor_id, _xsrf: '${handler.xsrf_token}'};
+            $.post("/vendor/delete", params, function (data) {
+                if (data.code > 0) {
+                    alert(data.msg)
+                    return false;
+                }
+                else {
+                    window.location.href = "/vendor";
+                }
+            }, "json");
+        }
+    }
+
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-sitemap"></i>
+            <h3 class="box-title">Radius模板信息列表</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+                % if permit.match(current_user.username,'/vendor/add'):
+                <div class="pull-right bottom10">
+                     <a href="/vendor/add" class="btn btn-sm btn-info">增加Radius模板信息</a>
+                </div>
+                % endif
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>模板ID</th>
+                            <th>模板描述</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for vendor in page_data.result:
+                            <tr>
+                                <td><a href="/vendor/detail?vendor_id=${vendor.vendor_id}">${vendor.vendor_id}</a></td>
+                                <td>${vendor.vendor_desc}</td>
+                                <td>
+                                    % if permit.match(current_user.username,'/vendor/update'):
+                                    <a class="opt-btn btn-default" href="/vendor/update?vendor_id=${vendor.vendor_id}">修改</a>
+                                    % endif
+                                    % if permit.match(current_user.username,'/vendor/delete'):
+                                    <a class="opt-btn btn-default" href="javascript:deleteVendor('${vendor.vendor_id}')">删除</a>
+                                    % endif
+                                </td>
+                            </tr>
+                        % endfor
+                    </tbody>
+                </table>
+                ${page_data.render()}
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

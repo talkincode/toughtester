@@ -1,0 +1,35 @@
+{
+    "radius": {
+        "debug": 1, 
+        "host": "0.0.0.0", 
+        "nasaddr": "127.0.0.1", 
+        "nasid": "toughac", 
+        "authorize_port": 3799, 
+        "interim_update": 300
+    }, 
+    "admin": {
+        "host": "0.0.0.0", 
+        "port": 8089
+    }, 
+    "conf_file": "toughtester.json", 
+    "database": {
+        "backup_path": "/var/toughtester/data", 
+        "dbtype": "sqlite", 
+        "dburl": "sqlite:////var/toughtester/toughtester.sqlite3", 
+        "echo": 0, 
+        "pool_recycle": 300, 
+        "pool_size": 120
+    }, 
+    "syslog": {
+        "enable": 0, 
+        "level": "INFO", 
+        "port": 514, 
+        "server": "127.0.0.1", 
+        "shost": "toughtester_admin"
+    }, 
+    "system": {
+        "debug": 1, 
+        "secret": "0BOTrVO6WRtkRnKTmM52nKfQpvCGY8vD", 
+        "tz": "CST-8"
+    }
+}

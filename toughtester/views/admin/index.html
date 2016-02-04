@@ -1,0 +1,68 @@
+<%inherit file="base.html"/>
+<%def name="head()">
+<script>
+    function busy(flag) {
+        if (flag) {
+            $("#loading").show();
+            $("#inbox").html("")
+            $("#inbox").hide();
+        } else {
+            $("#loading").hide();
+            $("#inbox").show();
+        }
+    }
+
+    $(document).ready(function () {
+        $("#loading").hide();
+        $("#inbox").hide();
+    });
+
+</script>
+</%def>
+
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-dashboard"></i>
+            <h3 class="box-title">控制面板</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th colspan="4"> <i class="fa fa-user"></i> 当前登录管理员</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>登录管理员</td>
+                    <td>${current_user.username}</td>
+                    <td>登录时间</td>
+                    <td>${current_user.login_time}</td>
+                </tr>
+                <tr>
+                    <td>登录IP地址</td>
+                    <td>${current_user.ipaddr or ''}</td>
+                    <td>系统版本</td>
+                    <td>${sys_version or '1.0'}</td>
+                </tr>
+                </tbody>
+               
+            </table>
+
+
+            <hr>
+            <div id="loading" style="display: none;"><img style="max-height: 90px;width: auto;"
+                                                          src="/static/img/loading.gif"></div>
+            <div id="inbox" class="text-info" style="height:120px;overflow:auto">
+
+            </div>
+        </div>
+    </div>
+        </div>
+</section>
+</%def>
+
