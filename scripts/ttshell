@@ -135,7 +135,7 @@ upgrade()
 {
     instance=${1:-toughtester}    
     cd ${rundir}/$instance
-    docker exec -it radius_$instance /usr/local/bin/toughrun upgrade
+    docker exec -it tt_$instance /usr/local/bin/toughrun upgrade
     docker-compose restart
     docker-compose ps
 }
@@ -144,7 +144,7 @@ uplib()
 {
     instance=${1:-toughtester}    
     cd ${rundir}/$instance
-    docker exec -it radius_$instance /usr/local/bin/toughrun uplib
+    docker exec -it tt_$instance /usr/local/bin/toughrun uplib
     docker-compose restart 
     docker-compose ps
 }

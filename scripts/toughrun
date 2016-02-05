@@ -35,27 +35,12 @@ initserv()
     echo "init service ok!"
 }
 
-standalone()
+admin()
 {
     initserv
-    pypy /opt/toughtester/toughctl --standalone
+    pypy /opt/toughtester/toughctl --admin
 }
 
-manage()
-{
-    initserv
-    pypy /opt/toughtester/toughctl --manage
-}
-
-task()
-{
-    pypy /opt/toughtester/toughctl --task
-}
-
-worker()
-{
-    pypy /opt/toughtester/toughctl --worker
-}
 
 upgrade()
 {
@@ -82,17 +67,10 @@ case "$1" in
     initserv
   ;;
 
-  standalone)
-    standalone
+  admin)
+    admin
   ;;
 
-  manage)
-    manage
-  ;;
-
-  task)
-    task
-  ;;
 
   worker)
     worker

@@ -37,15 +37,14 @@ def start_admin(config,dbengine):
     from toughtester.admin import httpd as admin_web
     admin_web.run(config, dbengine)
 
-def start_worker(config,dbengine):
-    from toughtester.radiusd import radiusd
-    radiusd.run_worker(config,dbengine)
+def start_authorized(config,dbengine):
+    from toughtester.radius import authorized
+    authorized.run(config,dbengine)
 
 def run():
     log.startLogging(sys.stdout)
     parser = argparse.ArgumentParser()
     parser.add_argument('-admin', '--admin', action='store_true', default=False, dest='admin', help='run admin')
-    parser.add_argument('-worker', '--worker', action='store_true', default=False, dest='worker', help='run worker')
     parser.add_argument('-initdb', '--initdb', action='store_true', default=False, dest='initdb', help='run initdb')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
     parser.add_argument('-c', '--conf', type=str, default="/etc/toughtester.json", dest='conf', help='config file')
@@ -64,11 +63,9 @@ def run():
 
     if args.admin:
         start_admin(config,dbengine=dbengine)
+        start_authorized(config, dbengine)
         reactor.run()    
 
-    elif args.worker:
-        start_worker(config,dbengine)
-        reactor.run()
 
     elif args.initdb:
         start_initdb(config)

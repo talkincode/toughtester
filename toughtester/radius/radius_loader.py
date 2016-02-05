@@ -44,7 +44,7 @@ class RadiusLoader:
             return radius
 
     def getRadius(self, host):
-        cache_key = 'RadiusLoader.radius.%s.%s' % (host,serv_type)
+        cache_key = 'RadiusLoader.radius.%s' % (host)
         cache = self.cache.get(cache_key)
         if cache:
             return cache

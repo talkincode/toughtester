@@ -67,6 +67,7 @@ class StatCounter:
 
     def __init__(self):
         self.starttime = time.time()
+        self.requests = 0
         self.replys = 0
         self.lasttime = self.starttime  
         self.stat_time = time.time()
@@ -78,8 +79,9 @@ class StatCounter:
             result = []
             _sectimes = self.lasttime - self.starttime
             _percount = self.replys /(_sectimes < 0 and 0 or _sectimes)
+            result.append("Current sender %s request"% self.requests)
             result.append("Current received %s response"% self.replys)
-            result.append("request per second:%s"%_percount)
+            result.append("response per second:%s"%_percount)
             self.stat_time = self.lasttime
             return result
 
@@ -92,7 +94,8 @@ class PressTesterHandler(BaseHandler,PressTestMixin):
         if resp.get('code') == 0:
             result = self.stat_counter.plus()
             if result:
-                self.broadcast("<br><br>".join(result))        
+                self.broadcast("<br><br>".join(result)) 
+
 
     @defer.inlineCallbacks
     @cyclone.web.authenticated
@@ -101,24 +104,22 @@ class PressTesterHandler(BaseHandler,PressTestMixin):
         radius_ipaddr = self.get_argument("radius_ipaddr",None)
         vendor_id = self.get_argument("vendor_id",None)
         test_times = self.get_argument("test_times",0)
-
         if not is_number.valid(test_times):
             self.broadcast("test_times not valid")
             return
-
         password = self.db.query(models.TTAccount).get(account_number).password
-
         self.stat_counter = StatCounter()
-
         for i in range(int(test_times)):
-            rad_session = RadiusSession(self.settings.config,self.settings.db_engine,radius_ipaddr=radius_ipaddr)
+            rad_session = RadiusSession(self.settings.config,
+                self.settings.db_engine,
+                radius_ipaddr=radius_ipaddr)
             d = rad_session.start(account_number,password)
+            self.stat_counter.requests += 1
             d.addCallbacks(self.on_stat,logger.error)
-            yield sleep(0.005)
+            yield sleep(0.01)
 
-        self.render_json(code=0,msg=u"success")
+        self.render_json(code=0,msg=u"done")
             
-        
 
 @permit.route(r"/account/tester/sse", u"测试消息", MenuUser, order=2.0002)
 class PressTestHandler(cyclone.sse.SSEHandler, PressTestMixin):
