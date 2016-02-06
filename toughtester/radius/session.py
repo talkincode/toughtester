@@ -20,6 +20,7 @@ class RadiusSession:
 
     def __init__(self, config, dbengine,radius_ipaddr=None):
         self.config = config
+        self.running = False
         self.radius_ipaddr = radius_ipaddr
         self.radloader = RadiusLoader(self.config,dbengine)
         self.session_start = int(time.time())
@@ -106,6 +107,7 @@ class RadiusSession:
             acct_resp = yield self.radius.send_acct(**self.session_data)
             loginfo.append(message.format_packet_log(acct_resp))
             if acct_resp.code == packet.AccountingResponse:
+                self.running = True
                 logger.info('Start session  %s' % self.session_id)
                 RadiusSession.sessions[self.session_id] = self
                 reactor.callLater(self.interim_update,self.check_session)
@@ -125,6 +127,7 @@ class RadiusSession:
 
     @defer.inlineCallbacks
     def stop(self):
+        self.running = False
         logger.info('Stop session  %s' % self.session_id)
         del RadiusSession.sessions[self.session_id]
         self.session_data['Acct-Status-Type'] = 2
@@ -139,6 +142,8 @@ class RadiusSession:
         if session_time > self.session_data['Session-Timeout']:
             self.stop().addCallbacks(logger.info,logger.error)
         else:
+            if not self.running:
+                return
             self.update().addCallbacks(logger.info,logger.error)
             reactor.callLater(self.interim_update,self.check_session)
 
