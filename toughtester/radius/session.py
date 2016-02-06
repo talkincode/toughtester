@@ -51,10 +51,13 @@ class RadiusSession:
 
     @staticmethod
     def stop_session(ipaddr):
+        ids = []
         for session in RadiusSession.sessions.values():
             if session.session_data['Framed-IP-Address'] == ipaddr:
-                session.stop().addCallbacks(logger.info,logger.error)
-
+                ids.append(session.session_id)
+        for sid in ids:
+            session = RadiusSession.sessions.pop(sid)
+            session.stop()
 
     @defer.inlineCallbacks
     def start(self, username, password, challenge=None, chap_pwd=None, **kwargs):
