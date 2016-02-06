@@ -8,6 +8,7 @@ RUN chmod +x /usr/local/bin/toughrun
 RUN /usr/local/bin/toughrun install
 
 EXPOSE 8089
+EXPOSE 3799/udp
 
 CMD ["/usr/local/bin/supervisord","-c","/etc/supervisord.conf"]
 

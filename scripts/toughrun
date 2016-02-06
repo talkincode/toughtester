@@ -1,6 +1,6 @@
 #!/bin/sh
 # toughtester docker install script
-# version: 0.0.2
+# version: 0.0.3
 
 set -e
 
@@ -71,10 +71,6 @@ case "$1" in
     admin
   ;;
 
-
-  worker)
-    worker
-  ;;
 
   upgrade)
     upgrade
