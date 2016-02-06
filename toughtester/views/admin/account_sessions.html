@@ -2,14 +2,17 @@
 
 <%def name="head()">
 <script>
-    function stopSession(session_id)
+    function stopSession(session_id,batch)
     {
+        $("#stop_action").attr("disabled", "disabled");
         params = {
+            batch: batch,
             session_id: session_id,
             _xsrf: '${handler.xsrf_token}'
         }
         $.post("/account/session/stop", params, function (data) {
             window.location.reload();
+            $("#stop_action").removeAttr("disabled");
             alert(data.msg)
         },"json");
     }
@@ -25,6 +28,11 @@
         </div>
         <div class="box-body">
             <div class="container">
+                % if permit.match(current_user.username,'/account/session/stop'):
+                <div class="pull-right bottom10">
+                    <a id="stop_action" href="javascript:stopSession('',true);" class="btn btn-sm btn-info">批量下线</a>
+                </div>
+                % endif
                 <table class="table table-hover">
                     <thead>
                         <tr>
