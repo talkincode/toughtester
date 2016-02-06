@@ -32,6 +32,6 @@ class AccountSessionHandler(BaseHandler):
 class AccountSessionStopHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
-        ipaddr = self.get_argument("ipaddr")
-        RadiusSession.stop_session(ipaddr)
+        session_id = self.get_argument("session_id")
+        RadiusSession.stop_session(session_id=session_id)
         self.render_json(code=0,msg=u"stop session done")

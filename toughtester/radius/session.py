@@ -50,14 +50,20 @@ class RadiusSession:
 
 
     @staticmethod
-    def stop_session(ipaddr):
-        ids = []
-        for session in RadiusSession.sessions.values():
-            if session.session_data['Framed-IP-Address'] == ipaddr:
-                ids.append(session.session_id)
-        for sid in ids:
-            session = RadiusSession.sessions.pop(sid)
-            session.stop()
+    def stop_session(ipaddr=None,session_id=None):
+        if session_id:
+            session = RadiusSession.sessions.pop(session_id,None)
+            if session:
+                session.stop()
+        elif ipaddr:
+            ids = []
+            for session in RadiusSession.sessions.values():
+                if session.session_data['Framed-IP-Address'] == ipaddr:
+                    ids.append(session.session_id)
+            for sid in ids:
+                session = RadiusSession.sessions.pop(sid)
+                session.stop()
+
 
     @defer.inlineCallbacks
     def start(self, username, password, challenge=None, chap_pwd=None, **kwargs):
@@ -132,7 +138,6 @@ class RadiusSession:
     def stop(self):
         self.running = False
         logger.info('Stop session  %s' % self.session_id)
-        del RadiusSession.sessions[self.session_id]
         self.session_data['Acct-Status-Type'] = 2
         self.session_data["Acct-Output-Octets"]  +=  random.randint(10240, 819200)
         self.session_data["Acct-Input-Octets"]  +=  random.randint(10240, 819200)

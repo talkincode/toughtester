@@ -2,10 +2,10 @@
 
 <%def name="head()">
 <script>
-    function stopSession(ipaddr)
+    function stopSession(session_id)
     {
         params = {
-            ipaddr: ipaddr,
+            session_id: session_id,
             _xsrf: '${handler.xsrf_token}'
         }
         $.post("/account/session/stop", params, function (data) {
@@ -49,7 +49,7 @@
                                 <td>${fmt_time(item.session_data['Acct-Session-Time'])}</td>
                                 <td>
                                     % if permit.match(current_user.username,'/account/session/stop'):
-                                    <a class="opt-btn btn-default" href="javascript:stopSession('${item.session_data["Framed-IP-Address"]}');">下线</a>
+                                    <a class="opt-btn btn-default" href="javascript:stopSession('${item.session_data["Acct-Session-Id"]}');">下线</a>
                                     % endif
                                 </td>
                             </tr>
