@@ -1,6 +1,6 @@
 #!/bin/sh
 # toughtester docker install script
-# version: 0.0.3
+# version: 0.0.4
 
 set -e
 

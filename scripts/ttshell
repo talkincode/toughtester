@@ -34,6 +34,8 @@ install()
 
     read -p "toughtester web port [8089]: " web_port
     web_port=${web_port:-8089}
+    read -p "toughtester coa port [3799]: " coa_port
+    coa_port=${coa_port:-3799}
 
     cat <<EOF
 
@@ -41,6 +43,7 @@ install()
 
     instance name: $instance
     web_port: ${web_port}
+    cao_port: ${coa_port}
 
 EOF
 
@@ -51,6 +54,7 @@ radius:
     image: "index.alauda.cn/toughstruct/toughtester"
     ports:
         - "${web_port}:8089"
+        - "${coa_port}:3799"
     restart: always
     ulimits:
         nproc: 65535
