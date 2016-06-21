@@ -128,8 +128,8 @@ class RadiusSession:
     def update(self):
         logger.info('Alive session  %s' % self.session_id)
         self.session_data['Acct-Status-Type'] = 3
-        self.session_data["Acct-Output-Octets"]  +=  random.randint(10240, 8192000)
-        self.session_data["Acct-Input-Octets"]  +=  random.randint(10240, 819200)
+        self.session_data["Acct-Output-Octets"]  +=  random.randint(1048576, 81920000)
+        self.session_data["Acct-Input-Octets"]  +=  random.randint(104857, 8192000)
         self.session_data['Acct-Session-Time'] = (int(time.time()) - self.session_start)
         acct_resp = yield self.radius.send_acct(**self.session_data)
         defer.returnValue(acct_resp)
@@ -139,8 +139,8 @@ class RadiusSession:
         self.running = False
         logger.info('Stop session  %s' % self.session_id)
         self.session_data['Acct-Status-Type'] = 2
-        self.session_data["Acct-Output-Octets"]  +=  random.randint(10240, 8192000)
-        self.session_data["Acct-Input-Octets"]  +=  random.randint(10240, 819200)
+        self.session_data["Acct-Output-Octets"]  +=  random.randint(1048576, 81920000)
+        self.session_data["Acct-Input-Octets"]  +=  random.randint(104857, 81920000)
         self.session_data['Acct-Session-Time'] = (int(time.time()) - self.session_start)
         acct_resp = yield self.radius.send_acct(**self.session_data)
         defer.returnValue(acct_resp)

@@ -1,9 +1,20 @@
 #!/usr/bin/env python
-import sys,os
+import sys,os,datetime
 sys.path.insert(0,os.path.dirname(__file__))
 from fabric.api import *
 from toughtester import __version__
 
+currtime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def push():
+    message = raw_input("commit msg:")
+    local("git add .")
+    try:
+        local("git commit -m \'%s - %s: %s\'"%(__version__, currtime, message))
+    except:
+        print 'no commit'
+    local("git push origin master")
+    
 
 def tag():
     local("git tag -a v%s -m 'version %s'"%(__version__,__version__))

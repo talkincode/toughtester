@@ -14,8 +14,8 @@ install()
 
     git clone -b master https://github.com/talkincode/toughtester.git /opt/toughtester
 
-    cp /opt/toughtester/etc/toughtester.json /etc/toughtester.json
-    cp /opt/toughtester/etc/supervisord.conf /etc/supervisord.conf
+    \cp /opt/toughtester/etc/toughtester.json /etc/toughtester.json
+    \cp /opt/toughtester/etc/supervisord.conf /etc/supervisord.conf
 
     chmod +x /opt/toughtester/toughctl
 }
