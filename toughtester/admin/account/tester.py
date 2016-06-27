@@ -39,6 +39,7 @@ class AuthTesterHandler(BaseHandler):
     def post(self):
         account_number = self.get_argument("account_number",None)
         radius_ipaddr = self.get_argument("radius_ipaddr",None)
+        print radius_ipaddr
         vendor_id = self.get_argument("vendor_id",None)
         password = self.db.query(models.TTAccount).get(account_number).password
         rad_session = RadiusSession(self.settings.config,self.settings.db_engine,radius_ipaddr=radius_ipaddr)

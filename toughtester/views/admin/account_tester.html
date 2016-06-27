@@ -20,6 +20,7 @@ function doStart()
 {
     busy(true);
     params = {
+        radius_ipaddr:$("#radius_ipaddr").val(),
         account_number:$("#account_number").val(),
         vendor_id:$("#vendor_id").val(),
         _xsrf: '${handler.xsrf_token}'
@@ -36,6 +37,7 @@ function doPress()
 {
     busy(true);
     params = {
+        radius_ipaddr:$("#radius_ipaddr").val(),
         account_number:$("#account_number").val(),
         test_times:$("#test_times").val(),
         vendor_id:$("#vendor_id").val(),
