@@ -74,7 +74,7 @@ class RadiusSession:
         auth_req["NAS-Port"]           =  kwargs.pop("NAS-Port",0)
         auth_req["Service-Type"]       =  kwargs.pop("Service-Type","Login-User")
         auth_req["NAS-Identifier"]     =  kwargs.pop("NAS-Identifier",self.config.radius.nasid)
-        auth_req["Called-Station-Id"]  =  kwargs.pop("Called-Station-Id",self.random_mac)
+        auth_req["Calling-Station-Id"]  =  kwargs.pop("Calling-Station-Id",self.random_mac)
         auth_req["Framed-IP-Address"]  =  kwargs.pop("Framed-IP-Address",self.next_ip)
         auth_req.update(kwargs)
         auth_resp = {}
@@ -104,7 +104,7 @@ class RadiusSession:
             self.session_data["NAS-IP-Address"]     = kwargs.pop("NAS-IP-Address",self.config.radius.nasaddr)
             self.session_data["NAS-Port"]           = kwargs.pop("NAS-Port",0)
             self.session_data["NAS-Identifier"]     = kwargs.pop("NAS-Identifier",self.config.radius.nasid)
-            self.session_data["Called-Station-Id"]  = kwargs.pop("Called-Station-Id",self.random_mac)
+            self.session_data["Calling-Station-Id"]  = kwargs.pop("Calling-Station-Id",self.random_mac)
             self.session_data["Framed-IP-Address"]  = kwargs.pop("Framed-IP-Address",self.next_ip)
             self.session_data["Acct-Output-Octets"]  =  0
             self.session_data["Acct-Input-Octets"]  =  0

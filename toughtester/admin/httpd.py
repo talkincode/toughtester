@@ -54,7 +54,7 @@ class Httpd(cyclone.web.Application):
                                         module_directory="/tmp")
 
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
-        self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
+        self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 86400)
         self.mcache = cache.CacheManager(self.db_engine)
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=['system_session','system_cache'])
 
